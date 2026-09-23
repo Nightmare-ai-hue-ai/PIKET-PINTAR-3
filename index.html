@@ -70,8 +70,8 @@
             <div class="w-16 h-1 bg-green-500 mx-auto rounded-full mb-6"></div>
             <h1 class="text-3xl font-extrabold text-gray-900 mb-2">PIKET Pintar <span class="text-green-500 text-lg align-top">Beta</span></h1>
             <p class="text-gray-600 mb-8 leading-relaxed font-medium">Urus jadwal piket grup Anda dengan teratur dan adil tanpa ribet.<br><br>dan tentu saja... <span class="font-bold text-green-600">gratis!</span></p>
-            <button id="tombol-mulai" class="w-full bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-emerald-700 transition duration-150 shadow-md">
-    Mulai
+            <button onclick="showLogin()" class="w-full bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-emerald-700 transition duration-150 shadow-md">
+                Mulai
             </button>
         </div>
     </div>
@@ -499,6 +499,14 @@
         </div>
     </div>
 
+    <!-- KODE KHUSUS UNTUK TOMBOL (Tambahkan di atas script Firebase) -->
+<script>
+    function showLogin() {
+        document.getElementById('welcome-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
+</script>
+    
     <script type="module">
         // Import Wajib 11.6.1 Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
