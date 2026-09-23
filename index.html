@@ -1,0 +1,926 @@
+!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIKET PINTAR - Sistem Terpadu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; color: #1f2937; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .slide-up { animation: slideUp 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #86efac; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #22c55e; }
+
+        /* Latar Belakang Buku Transparan */
+        .bg-pattern {
+            background-color: #22c55e;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zm-30 0l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zM24.627 30l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zm30 0l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zM14.627 15l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zm30 0l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zM44.627 45l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zm-30 0l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zM29.627 45l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66zm0-30l.83 1.873-1.66 1.872-1.66-1.872.83-1.873h1.66z' fill='%3E%3Cpath' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        /* Toggle Peran (Role Visibility) */
+        .show-kebersihan, .show-murid, .show-walikelas { display: none; }
+        body[data-role="kebersihan"] .show-kebersihan { display: block; }
+        body[data-role="kebersihan"] .flex.show-kebersihan { display: flex; }
+        
+        body[data-role="kebersihan"] .show-kebersihan-murid,
+        body[data-role="murid"] .show-kebersihan-murid { display: block; }
+        body[data-role="kebersihan"] .flex.show-kebersihan-murid,
+        body[data-role="murid"] .flex.show-kebersihan-murid { display: flex; }
+        
+        body[data-role="murid"] .show-murid { display: block; }
+        body[data-role="murid"] .flex.show-murid { display: flex; }
+        
+        body[data-role="walikelas"] .show-walikelas { display: block; }
+        body[data-role="walikelas"] .flex.show-walikelas { display: flex; }
+        
+        body[data-role="kebersihan"] .show-kebersihan-walikelas,
+        body[data-role="walikelas"] .show-kebersihan-walikelas { display: block; }
+        body[data-role="kebersihan"] .flex.show-kebersihan-walikelas,
+        body[data-role="walikelas"] .flex.show-kebersihan-walikelas { display: flex; }
+
+        body[data-role="walikelas"] .hide-walikelas { display: none !important; }
+
+        /* Mobile Nav Toggles */
+        .mobile-murid, .mobile-kebersihan, .mobile-walikelas { display: none; }
+        body[data-role="murid"] .mobile-murid { display: flex; }
+        body[data-role="kebersihan"] .mobile-kebersihan { display: flex; }
+        body[data-role="walikelas"] .mobile-walikelas { display: flex; }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col overflow-hidden bg-gray-100" data-role="none">
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none"></div>
+
+    <!-- 1. LANDING PAGE -->
+    <div id="landing-screen" class="absolute inset-0 z-50 flex flex-col justify-end p-6 sm:p-10 fade-in bg-cover bg-center bg-no-repeat" style="background-image: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%), url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1200');">
+        <div class="w-full max-w-md mx-auto slide-up bg-white/95 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center">
+            <div class="w-16 h-1 bg-green-500 mx-auto rounded-full mb-6"></div>
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-2">PIKET Pintar <span class="text-green-500 text-lg align-top">Beta</span></h1>
+            <p class="text-gray-600 mb-8 leading-relaxed font-medium">Urus jadwal piket grup Anda dengan teratur dan adil tanpa ribet.<br><br>dan tentu saja... <span class="font-bold text-green-600">gratis!</span></p>
+            <button onclick="showLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] active:scale-95 text-lg cursor-pointer">
+                Mulai
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. LOGIN SCREEN (Tanpa Password, Filter Email) -->
+    <div id="login-screen" class="hidden absolute inset-0 z-40 bg-gray-50 flex items-center justify-center p-4 fade-in overflow-y-auto">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md text-center border-t-8 border-green-500 my-auto">
+            <div class="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <i class="fa-solid fa-broom text-4xl text-green-500"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-1">PIKET PINTAR</h1>
+            <p class="text-gray-500 mb-8 text-sm">Sistem Kehadiran & Kebersihan Terpadu</p>
+            
+            <form id="login-form" class="space-y-5 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">E-mail (Hanya @gmail, @yahoo, @outlook)</label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-4 top-3.5 text-gray-400 text-lg"></i>
+                        <input type="email" id="login-email" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:bg-white focus:outline-none transition" placeholder="nama@gmail.com" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Nama Lengkap</label>
+                    <div class="relative">
+                        <i class="fa-regular fa-user absolute left-4 top-3.5 text-gray-400 text-lg"></i>
+                        <input type="text" id="login-name" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:bg-white focus:outline-none transition" placeholder="Masukkan nama lengkap..." required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Peran Akses</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-shield-halved absolute left-4 top-3.5 text-gray-400 text-lg"></i>
+                        <select id="login-role" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:bg-white focus:outline-none appearance-none transition cursor-pointer" required>
+                            <option value="" disabled selected hidden>Pilih peran akses...</option>
+                            <option value="murid">Murid (Pelaksana Piket)</option>
+                            <option value="kebersihan">Seksi Kebersihan (Admin)</option>
+                            <option value="walikelas">Wali Kelas (Pengawas)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-gray-400 leading-tight bg-gray-50 p-3 rounded-lg border border-gray-100 flex gap-2 items-start">
+                    <i class="fa-solid fa-circle-info mt-0.5 text-green-500 shrink-0"></i>
+                    <p>Sistem akan secara otomatis mendeteksi dan menyimpan profil Anda ke Database server.</p>
+                </div>
+
+                <button type="submit" id="btn-login" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl transition duration-200 shadow-md text-sm mt-2 cursor-pointer">
+                    Masuk
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. MAIN APP STRUCTURE -->
+    <div id="main-app" class="hidden flex-col h-full w-full max-w-[600px] mx-auto bg-white shadow-2xl relative overflow-hidden ring-1 ring-gray-200">
+        
+        <!-- App Header -->
+        <header class="bg-white px-5 py-4 border-b border-gray-100 flex justify-between items-center shrink-0 z-20 sticky top-0">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center font-bold text-lg shadow-sm">P</div>
+                <h1 class="text-xl font-bold text-gray-800 tracking-tight">PIKET Pintar</h1>
+            </div>
+            
+            <div class="flex items-center gap-4 text-right">
+                <div class="relative hide-walikelas cursor-pointer" onclick="toggleNotifications()">
+                    <i class="fa-solid fa-bell text-gray-400 hover:text-green-500 text-xl transition"></i>
+                    <span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden shadow-sm border border-white">0</span>
+                    
+                    <div id="notif-popup" class="hidden absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 text-gray-800 z-50 overflow-hidden text-left cursor-default" onclick="event.stopPropagation()">
+                        <div class="p-3 bg-gray-50 border-b border-gray-100 font-bold text-sm flex justify-between items-center">
+                            <span><i class="fa-solid fa-bell text-gray-500 mr-1"></i> Notifikasi</span>
+                            <button onclick="toggleNotifications()" class="text-gray-400 hover:text-gray-600 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div id="notif-list" class="max-h-64 overflow-y-auto bg-white">
+                            <div class="p-4 text-center text-xs text-gray-400">Tidak ada notifikasi baru</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex flex-col">
+                        <span id="header-user-email" class="text-[10px] text-gray-500 font-medium">Username@gmail.com</span>
+                        <span id="header-user-role" class="text-xs font-bold text-green-600">Murid Pelaksana</span>
+                    </div>
+                    <div class="w-9 h-9 bg-gray-100 rounded-full border-2 border-green-500 flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-user text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id="content-area" class="flex-1 overflow-y-auto relative bg-gray-50 pb-24 sm:pb-0">
+            
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-section min-h-full bg-pattern flex flex-col p-5 fade-in">
+                <div class="bg-white/95 backdrop-blur rounded-2xl p-5 mb-6 shadow-sm border border-white">
+                    <div class="flex justify-between items-start mb-2">
+                        <h2 class="text-xl font-extrabold text-gray-800">Halo, <span id="dash-name" class="text-green-600">Username</span>.</h2>
+                        <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-full transition flex items-center gap-1 cursor-pointer">
+                            <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                        </button>
+                    </div>
+                    <p id="dash-desc" class="text-sm text-gray-600 leading-relaxed">Lihat jadwal piketmu, kirim laporan foto bukti, atau ajukan izin.</p>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-lg p-3 flex-1 flex flex-col gap-2">
+                    <button onclick="navigate('roster')" class="w-full text-left p-4 rounded-2xl hover:bg-green-50 transition flex items-center gap-4 group cursor-pointer">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-users"></i></div>
+                        <div class="flex-1">
+                            <h3 class="text-base font-bold text-gray-800">Kelompok Piket</h3>
+                            <p class="text-[11px] text-gray-500">Jadwal pembagian tugas piket.</p>
+                        </div>
+                    </button>
+                    <button onclick="navigate('task')" class="hide-walikelas w-full text-left p-4 rounded-2xl hover:bg-green-50 transition flex items-center gap-4 group cursor-pointer">
+                        <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-camera"></i></div>
+                        <div class="flex-1">
+                            <h3 class="text-base font-bold text-gray-800">Lapor Piket</h3>
+                            <p class="text-[11px] text-gray-500">Laporan dan verifikasi tugas.</p>
+                        </div>
+                    </button>
+                    <button onclick="navigate('izin')" class="w-full text-left p-4 rounded-2xl hover:bg-green-50 transition flex items-center gap-4 group cursor-pointer">
+                        <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-envelope-open-text"></i></div>
+                        <div class="flex-1">
+                            <h3 class="text-base font-bold text-gray-800">Ajukan Izin</h3>
+                            <p class="text-[11px] text-gray-500">Pengajuan data perizinan kelas.</p>
+                        </div>
+                    </button>
+                    <button onclick="navigate('konsekuensi')" class="w-full text-left p-4 rounded-2xl hover:bg-green-50 transition flex items-center gap-4 group cursor-pointer">
+                        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-gavel"></i></div>
+                        <div class="flex-1">
+                            <h3 class="text-base font-bold text-gray-800">Sanksi Kelas</h3>
+                            <p class="text-[11px] text-gray-500">Catatan sanksi pelanggaran.</p>
+                        </div>
+                    </button>
+                    <button onclick="navigate('history')" class="w-full text-left p-4 rounded-2xl hover:bg-green-50 transition flex items-center gap-4 group cursor-pointer">
+                        <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="flex-1">
+                            <h3 class="text-base font-bold text-gray-800">Histori Piket</h3>
+                            <p class="text-[11px] text-gray-500">Rekap presensi & laporan.</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: ROSTER -->
+            <div id="view-roster" class="view-section hidden fade-in bg-gray-50 min-h-full">
+                <div class="bg-white p-4 border-b flex items-center gap-3 sticky top-0 z-10 shadow-sm">
+                    <button onclick="navigate('dashboard')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer"><i class="fa-solid fa-arrow-left text-gray-600"></i></button>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 leading-tight show-kebersihan">Atur Kelompok Piket</h2>
+                        <h2 class="text-lg font-bold text-gray-800 leading-tight show-murid">Jadwal Kelompok Piket</h2>
+                        <h2 class="text-lg font-bold text-gray-800 leading-tight show-walikelas">Pantau Kelompok Piket</h2>
+                        <p class="text-[11px] text-gray-500">Jadwal pembagian tugas kelas.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 space-y-4">
+                    <div class="flex overflow-x-auto gap-2 mb-4 pb-1 scrollbar-hide" id="roster-day-selector">
+                        <button class="day-btn shrink-0 bg-gray-900 text-white px-4 py-2 rounded-xl font-medium text-xs shadow-sm transition cursor-pointer" data-day="Senin">Senin</button>
+                        <button class="day-btn shrink-0 bg-white text-gray-600 px-4 py-2 rounded-xl font-medium text-xs border border-gray-200 transition cursor-pointer" data-day="Selasa">Selasa</button>
+                        <button class="day-btn shrink-0 bg-white text-gray-600 px-4 py-2 rounded-xl font-medium text-xs border border-gray-200 transition cursor-pointer" data-day="Rabu">Rabu</button>
+                        <button class="day-btn shrink-0 bg-white text-gray-600 px-4 py-2 rounded-xl font-medium text-xs border border-gray-200 transition cursor-pointer" data-day="Kamis">Kamis</button>
+                        <button class="day-btn shrink-0 bg-white text-gray-600 px-4 py-2 rounded-xl font-medium text-xs border border-gray-200 transition cursor-pointer" data-day="Jumat">Jumat</button>
+                        <button class="day-btn flex-shrink-0 bg-white text-orange-700 px-4 py-2 rounded-lg font-medium text-xs transition shadow-sm border border-orange-200 cursor-pointer" data-day="Guru">Daftar Guru</button>
+                    </div>
+
+                    <!-- Div Show Kebersihan khusus agar grid tidak menimpa aturan display:none -->
+                    <div class="show-kebersihan">
+                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-2">
+                            <p class="text-[10px] text-gray-500 mb-2 font-bold"><i class="fa-solid fa-user-plus text-blue-400"></i> Tambah Pelaksana</p>
+                            <form id="add-student-form" class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="new-student-name" class="flex-1 border-0 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 text-xs shadow-sm border border-gray-200" placeholder="Nama siswa..." required>
+                                <input type="email" id="new-student-email" class="flex-1 border-0 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 text-xs shadow-sm border border-gray-200" placeholder="Email siswa..." required>
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold transition shadow-sm text-xs cursor-pointer"><i class="fa-solid fa-plus"></i></button>
+                            </form>
+                        </div>
+                        <div class="bg-orange-50 p-3 rounded-xl border border-orange-200 mb-4">
+                            <p class="text-[10px] text-orange-800 mb-2 font-bold"><i class="fa-solid fa-user-tie text-orange-400"></i> Tambah Wali Kelas</p>
+                            <form id="add-guru-form" class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="new-guru-name" class="flex-1 border-0 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 text-xs shadow-sm border border-orange-100" placeholder="Nama Guru..." required>
+                                <input type="email" id="new-guru-email" class="flex-1 border-0 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 text-xs shadow-sm border border-orange-100" placeholder="Email Guru..." required>
+                                <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-bold transition shadow-sm text-xs cursor-pointer"><i class="fa-solid fa-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                        <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center text-[11px] font-bold text-gray-600">
+                            <span id="current-roster-day" class="uppercase tracking-wider">Senin</span>
+                            <span id="roster-count" class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full">0 Anggota</span>
+                        </div>
+                        <ul id="roster-list" class="divide-y divide-gray-100">
+                            <li class="p-6 text-center text-gray-400 text-xs italic">Memuat data...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State Helper (Ditampilkan jika murid/guru belum ada di jadwal manapun) -->
+            <div id="global-empty-state" class="hidden h-full flex-col items-center justify-center text-center p-8 mt-10">
+                <i class="fa-solid fa-users-slash text-6xl text-gray-300 mb-5"></i>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Belum Terdaftar di Kelompok</h3>
+                <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">Anda belum memasuki jadwal kelompok piket manapun. Silakan tunggu Seksi Kebersihan memasukkan email Anda ke dalam jadwal terlebih dahulu.</p>
+            </div>
+
+            <div id="protected-views-container">
+                <!-- VIEW: TASKS / LAPOR -->
+                <div id="view-task" class="view-section hidden fade-in bg-white min-h-full">
+                    <div class="bg-white p-4 border-b flex items-center gap-3 sticky top-0 z-10 shadow-sm">
+                        <button onclick="navigate('dashboard')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer"><i class="fa-solid fa-arrow-left text-gray-600"></i></button>
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 leading-tight">Lapor Piket</h2>
+                            <p class="text-[11px] text-gray-500">Laporan dan verifikasi tugas piket.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-5">
+                        <form id="lapor-form" class="space-y-6 show-kebersihan-murid">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-2">Pilih Tugas yang Dikerjakan...</label>
+                                <div class="relative">
+                                    <select id="task-dropdown" class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-400 focus:outline-none appearance-none cursor-pointer" onchange="toggleCustomTaskDropdown()">
+                                        <option value="" disabled selected hidden>Pilih jenis tugas...</option>
+                                        <option value="Papan Tulis & Spidol (Ringan)">Papan Tulis & Spidol (Ringan)</option>
+                                        <option value="Sapu & Pel Kelas (Berat)">Sapu & Pel Lantai (Berat)</option>
+                                        <option value="Buang Sampah (Ringan)">Buang Sampah (Ringan)</option>
+                                        <option value="Rapikan Meja & Kursi (Berat)">Rapikan Meja & Kursi (Berat)</option>
+                                        <option value="Lainnya">Lainnya... (Ketik Sendiri)</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
+                                </div>
+                                <div id="custom-task-lapor-div" class="hidden mt-2 flex gap-2">
+                                    <input type="text" id="custom-task-lapor-input" class="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-400 focus:outline-none" placeholder="Tuliskan tugas spesifik...">
+                                    <button type="button" onclick="addCustomTaskLapor()" class="bg-green-600 text-white px-4 py-3 rounded-xl font-bold text-sm hover:bg-green-700 transition shadow-md cursor-pointer">Tambah</button>
+                                </div>
+                                <ul id="selected-tasks-list" class="space-y-2 text-xs text-gray-600 mt-3">
+                                    <li class="text-center text-gray-400 italic bg-gray-50 p-3 rounded-lg border border-gray-100" id="empty-task-msg">Belum ada tugas yang dipilih.</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Dokumentasi Foto Bukti Piket:</label>
+                                <div class="relative w-full aspect-video bg-[#d1fae5] rounded-3xl flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-[#bbf7d0] transition shadow-inner group border-4 border-dashed border-[#a7f3d0]">
+                                    <input type="file" id="lapor-foto" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                    <div id="foto-placeholder" class="flex flex-col items-center justify-center pointer-events-none transition-transform group-hover:scale-110">
+                                        <i class="fa-solid fa-cloud-arrow-up text-7xl text-gray-900 mb-3 drop-shadow-md"></i>
+                                        <span class="text-xs font-bold text-gray-800 bg-white/70 px-4 py-1.5 rounded-full">Pilih foto dokumentasi</span>
+                                    </div>
+                                    <div id="foto-preview-container" class="hidden absolute inset-0 bg-black items-center justify-center">
+                                        <img id="foto-preview" src="" alt="Preview" class="w-full h-full object-cover opacity-80">
+                                        <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-gray-900/80 text-white text-[10px] px-3 py-1 rounded-full backdrop-blur-sm whitespace-nowrap">
+                                            <i class="fa-solid fa-image text-green-400 mr-1"></i> Ketuk untuk ganti foto
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" id="btn-submit-lapor" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] text-sm cursor-pointer">
+                                Kirim Laporan Piket
+                            </button>
+                        </form>
+
+                        <div class="show-kebersihan mt-10 pt-6 border-t border-gray-200">
+                            <h3 class="font-bold text-gray-800 mb-3"><i class="fa-solid fa-clipboard-check text-blue-500 mr-2"></i> Verifikasi Laporan Masuk <span id="badge-pending" class="ml-2 bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-full">0</span></h3>
+                            <div id="pending-reports-list" class="space-y-3">
+                                <div class="text-center text-xs text-gray-400 py-6 italic bg-gray-50 rounded-xl border border-gray-100">Tidak ada laporan baru yang perlu diperiksa.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: IZIN -->
+                <div id="view-izin" class="view-section hidden fade-in bg-gray-50 min-h-full">
+                    <div class="bg-white p-4 border-b flex items-center gap-3 sticky top-0 z-10 shadow-sm">
+                        <button onclick="navigate('dashboard')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer"><i class="fa-solid fa-arrow-left text-gray-600"></i></button>
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 leading-tight">Ajukan Izin</h2>
+                            <p class="text-[11px] text-gray-500">Pengajuan dan data perizinan kelas.</p>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-6">
+                        <div class="show-kebersihan-murid bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                            <form id="form-izin" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Tanggal Izin Piket</label>
+                                    <input type="date" id="izin-date" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-400 focus:bg-white focus:outline-none transition" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Alasan Izin Piket</label>
+                                    <textarea id="izin-reason" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-400 focus:bg-white focus:outline-none transition" placeholder="Jelaskan alasan mendadak kamu..." required></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm cursor-pointer">Submit</button>
+                            </form>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="px-4 py-3 bg-gray-50 border-b"><h3 class="text-xs font-bold text-gray-800">Riwayat Izin</h3></div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-white border-b text-[10px] text-gray-400 uppercase tracking-wider">
+                                            <th class="p-3 font-semibold">Nama & Tgl</th>
+                                            <th class="p-3 font-semibold">Alasan</th>
+                                            <th class="p-3 font-semibold text-center">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="izin-table-body" class="divide-y divide-gray-50 bg-white">
+                                        <tr><td colspan="3" class="p-6 text-center text-[11px] text-gray-400 italic">Memuat data...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: SANKSI -->
+                <div id="view-konsekuensi" class="view-section hidden fade-in bg-gray-50 min-h-full">
+                    <div class="bg-white p-4 border-b flex items-center gap-3 sticky top-0 z-10 shadow-sm">
+                        <button onclick="navigate('dashboard')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer"><i class="fa-solid fa-arrow-left text-gray-600"></i></button>
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 leading-tight">Sanksi Kelas</h2>
+                            <p class="text-[11px] text-gray-500">Catatan sanksi pelanggaran Alpha.</p>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-6">
+                        <div class="show-kebersihan bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                            <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2"><i class="fa-solid fa-user-minus text-red-500 mr-1"></i> Berikan Sanksi Alpha</h3>
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                <select id="verif-day" class="w-full border rounded-lg px-3 py-2 text-xs bg-gray-50 focus:ring-2 focus:ring-red-400"><option value="Senin">Senin</option><option value="Selasa">Selasa</option><option value="Rabu">Rabu</option><option value="Kamis">Kamis</option><option value="Jumat">Jumat</option></select>
+                                <input type="date" id="verif-date" class="w-full border rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-red-400 bg-white" required>
+                            </div>
+                            <select id="verif-student" class="border rounded-lg px-3 py-2 text-xs bg-gray-50 focus:ring-2 focus:ring-red-400 w-full mb-3"><option value="">-- Pilih Siswa --</option></select>
+                            <button id="btn-mark-alpha" class="w-full bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-3 rounded-lg transition shadow-sm cursor-pointer">Tetapkan Alpha</button>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="bg-red-50 p-4 border-b border-red-100"><h3 class="text-xs font-bold text-red-800 leading-relaxed">Pelanggaran & Hukuman</h3></div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead><tr class="bg-white border-b text-[10px] text-gray-400 uppercase tracking-wider"><th class="p-3 font-semibold">Nama & Tgl</th><th class="p-3 font-semibold">Sanksi</th><th class="p-3 font-semibold text-center">Penyelesaian</th></tr></thead>
+                                    <tbody id="konsekuensi-table-body" class="divide-y divide-gray-50 bg-white"><tr><td colspan="3" class="p-6 text-center text-[11px] text-gray-400 italic">Memuat data...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: HISTORY -->
+                <div id="view-history" class="view-section hidden fade-in bg-gray-50 min-h-full">
+                    <div class="bg-white p-4 border-b flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <button onclick="navigate('dashboard')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer"><i class="fa-solid fa-arrow-left text-gray-600"></i></button>
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-800 leading-tight">Histori Piket</h2>
+                                <p class="text-[11px] text-gray-500">Rekap presensi & laporan.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="p-4 bg-gray-50 border-b flex flex-col gap-2">
+                                <h3 class="text-xs font-bold text-gray-800">Rekapitulasi Kehadiran</h3>
+                                <select id="history-filter" class="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white cursor-pointer"><option value="All">Semua Status</option><option value="Hadir">Hanya Hadir</option><option value="Alpha">Hanya Alpha</option><option value="Izin">Hanya Izin</option></select>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead><tr class="bg-white border-b text-[10px] text-gray-400 uppercase tracking-wider"><th class="p-3 font-semibold">Tgl & Nama</th><th class="p-3 font-semibold">Catatan / Foto</th><th class="p-3 font-semibold text-center">Status</th></tr></thead>
+                                    <tbody id="history-table-body" class="divide-y divide-gray-50 bg-white"><tr><td colspan="3" class="p-6 text-center text-[11px] text-gray-400 italic">Memuat data...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End of Protected Views -->
+        </main>
+
+        <div class="sm:hidden absolute bottom-0 w-full bg-white flex justify-around p-2 pb-6 z-20 shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.05)] border-t border-gray-100">
+            <!-- Mobile Nav Murid -->
+            <button onclick="navigate('dashboard')" class="mobile-murid flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-house mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Beranda</span>
+            </button>
+            <button onclick="navigate('roster')" class="mobile-murid flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-users mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Jadwal</span>
+            </button>
+            <button onclick="navigate('task')" class="mobile-murid flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-camera mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Lapor</span>
+            </button>
+            <button onclick="navigate('izin')" class="mobile-murid flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-envelope mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Izin</span>
+            </button>
+            <button onclick="navigate('history')" class="mobile-murid flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-clock-rotate-left mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Histori</span>
+            </button>
+
+            <!-- Mobile Nav Seksi Kebersihan -->
+            <button onclick="navigate('dashboard')" class="mobile-kebersihan flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-house mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Beranda</span>
+            </button>
+            <button onclick="navigate('roster')" class="mobile-kebersihan flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-users mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Jadwal</span>
+            </button>
+            <button onclick="navigate('task')" class="mobile-kebersihan flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-clipboard-check mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Verifikasi</span>
+            </button>
+            <button onclick="navigate('izin')" class="mobile-kebersihan flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-envelope mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Izin</span>
+            </button>
+            <button onclick="navigate('history')" class="mobile-kebersihan flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/5 cursor-pointer">
+                <i class="fa-solid fa-clock-rotate-left mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Histori</span>
+            </button>
+
+            <!-- Mobile Nav Wali Kelas -->
+            <button onclick="navigate('dashboard')" class="mobile-walikelas flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/4 cursor-pointer">
+                <i class="fa-solid fa-house mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Beranda</span>
+            </button>
+            <button onclick="navigate('roster')" class="mobile-walikelas flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/4 cursor-pointer">
+                <i class="fa-solid fa-users mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Pantau</span>
+            </button>
+            <button onclick="navigate('konsekuensi')" class="mobile-walikelas flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/4 cursor-pointer">
+                <i class="fa-solid fa-gavel mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Sanksi</span>
+            </button>
+            <button onclick="navigate('history')" class="mobile-walikelas flex-col items-center text-gray-400 hover:text-green-600 transition p-2 w-1/4 cursor-pointer">
+                <i class="fa-solid fa-clock-rotate-left mb-1.5 text-lg"></i><span class="text-[9px] font-bold">Histori</span>
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Wajib 11.6.1 Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // GANTI BAGIAN INI JIKA ADA PERUBAHAN CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaKu7M3cR8TTUNKEtvtLGi1vkfQ_hc0sM",
+            authDomain: "piket-pintar.firebaseapp.com",
+            projectId: "piket-pintar",
+            storageBucket: "piket-pintar.firebasestorage.app",
+            messagingSenderId: "685519228066",
+            appId: "1:685519228066:web:baa591075bfa21495c1bfb",
+            measurementId: "G-9M4W5GL50K"
+        };
+        
+        const appId = 'piket-pintar-v3-final';
+        
+        let app, db, auth, currentUserId;
+        let currentUserRole = ''; let currentUserName = ''; let currentUserEmail = '';
+        let currentDayTab = 'Senin';
+        let rosterData = { Senin: [], Selasa: [], Rabu: [], Kamis: [], Jumat: [], Sabtu: [], Guru: [] };
+        let historyData = []; let leavesData = []; let localSelectedTasks = [];
+        let hasRosterAccess = false; // Deteksi grup kosong
+
+        // Toast Helper Khusus Error Logging
+        window.showToast = function(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-green-600' : (type === 'error' ? 'bg-red-600' : 'bg-gray-800');
+            const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-circle-exclamation' : 'fa-info-circle');
+            toast.className = `${bg} text-white px-4 py-3 rounded-xl shadow-2xl text-xs font-bold flex items-center gap-3 slide-up w-full border border-black/10 z-[200] pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span class="flex-1">${message}</span>`;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        // Tampilkan error console langsung ke pengguna
+        console.error = function(message, ...args) {
+            showToast(`Sistem Error: ${message}`, 'error');
+            console.info("Dev Log:", message, ...args); // Fallback ke info agar tetap muncul di console
+        }
+
+        // INIT FIREBASE
+        async function initApp() {
+            try {
+                console.info("Memulai inisialisasi Firebase...");
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Ini WAJIB berhasil sebelum bisa menulis data
+                await signInAnonymously(auth);
+                console.info("Berhasil terhubung secara Anonim (Auth).");
+                
+                onAuthStateChanged(auth, (user) => { if (user) currentUserId = user.uid; });
+            } catch (error) { 
+                console.error("Gagal inisialisasi Firebase. Pastikan Rules dan Auth Anonim sudah disetting.", error); 
+                showToast("Sistem tidak dapat terhubung ke server Firebase. Hubungi Admin.", "error");
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
+            const nameInput = document.getElementById('login-name').value.trim();
+            const roleInput = document.getElementById('login-role').value;
+            
+            // Validasi Domain Email
+            const emailDomain = emailInput.split('@')[1];
+            if(!['gmail.com', 'outlook.com', 'yahoo.com'].includes(emailDomain)) {
+                showToast("Sistem hanya mengizinkan email @gmail, @outlook, atau @yahoo.", "error"); return;
+            }
+
+            if(!db || !auth.currentUser) { 
+                showToast("Gagal: Database Firebase belum terhubung sempurna. Tunggu beberapa detik dan coba lagi.", "error"); return; 
+            }
+
+            const btn = document.getElementById('btn-login');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan...'; btn.disabled = true;
+
+            try {
+                console.info(`Mencoba akses ke Firestore untuk email: ${emailInput}...`);
+                // PATH WAJIB: 6 Segmen untuk Doc
+                const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', emailInput);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    if (userData.name !== nameInput || userData.role !== roleInput) {
+                        showToast("Akses Ditolak! Email ini terdaftar untuk nama/peran lain di database.", "error");
+                        btn.innerHTML = originalText; btn.disabled = false; return;
+                    }
+                } else {
+                    console.info("Email baru terdeteksi. Mencoba menyimpan ke database...");
+                    await setDoc(userRef, { email: emailInput, name: nameInput, role: roleInput });
+                }
+
+                // Sukses
+                currentUserRole = roleInput; currentUserEmail = emailInput; currentUserName = nameInput;
+                document.body.setAttribute('data-role', currentUserRole);
+                document.getElementById('dash-name').innerText = currentUserName.split(' ')[0];
+                document.getElementById('header-user-email').innerText = currentUserEmail;
+                
+                let roleStr = 'Murid Pelaksana';
+                if(currentUserRole === 'kebersihan') roleStr = 'Seksi Kebersihan (Admin)';
+                if(currentUserRole === 'walikelas') roleStr = 'Wali Kelas (Pengawas)';
+                document.getElementById('header-user-role').innerText = roleStr;
+
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('flex');
+                
+                const today = new Date().toISOString().split('T')[0];
+                if(document.getElementById('verif-date')) document.getElementById('verif-date').value = today;
+
+                loadAllData(); navigate('dashboard');
+                showToast(`Autentikasi berhasil! Selamat datang, ${currentUserName.split(' ')[0]}.`);
+            } catch (error) {
+                console.error("Gagal login: " + error.message, error);
+            } finally {
+                btn.innerHTML = originalText; btn.disabled = false;
+            }
+        });
+
+        function loadAllData() {
+            if (!currentUserId || !db) return;
+
+            const rosterRef = doc(db, 'artifacts', appId, 'public', 'data', 'rosters', 'weekly');
+            onSnapshot(rosterRef, (docSnap) => {
+                if (docSnap.exists()) { rosterData = { Senin: [], Selasa: [], Rabu: [], Kamis: [], Jumat: [], Sabtu: [], Guru: [], ...docSnap.data() }; }
+                checkGroupAccess();
+                renderRosterList();
+                if(document.getElementById('verif-student')) populateVerifStudentSelect();
+            }, (error) => console.error("Error mengambil jadwal:", error.message));
+
+            const historyCol = collection(db, 'artifacts', appId, 'public', 'data', 'history');
+            onSnapshot(historyCol, (snapshot) => {
+                historyData = [];
+                snapshot.forEach(doc => { historyData.push({ id: doc.id, ...doc.data() }); });
+                historyData.sort((a, b) => b.timestamp - a.timestamp);
+                renderHistoryTable(); renderPendingReports(); renderKonsekuensiTable(); updateNotifications();
+            }, (error) => console.error("Error histori:", error.message));
+
+            const leavesCol = collection(db, 'artifacts', appId, 'public', 'data', 'leaves');
+            onSnapshot(leavesCol, (snapshot) => {
+                leavesData = [];
+                snapshot.forEach(doc => { leavesData.push({ id: doc.id, ...doc.data() }); });
+                leavesData.sort((a, b) => b.timestamp - a.timestamp);
+                renderLeavesTable(); updateNotifications();
+            }, (error) => console.error("Error izin:", error.message));
+        }
+
+        function checkGroupAccess() {
+            if (currentUserRole === 'kebersihan') { hasRosterAccess = true; return; }
+            hasRosterAccess = false;
+            if (currentUserRole === 'walikelas') {
+                if (rosterData['Guru'] && rosterData['Guru'].some(g => typeof g === 'object' ? g.email === currentUserEmail : g === currentUserName)) hasRosterAccess = true;
+            } else {
+                for (const day in rosterData) {
+                    if (day !== 'Guru' && rosterData[day]) {
+                        if (rosterData[day].some(m => typeof m === 'object' ? m.email === currentUserEmail : m === currentUserName)) {
+                            hasRosterAccess = true; break;
+                        }
+                    }
+                }
+            }
+            updateAccessStates();
+        }
+
+        function updateAccessStates() {
+            const protectedContainer = document.getElementById('protected-views-container');
+            const emptyState = document.getElementById('global-empty-state');
+            
+            if (hasRosterAccess || currentUserRole === 'kebersihan') {
+                protectedContainer.classList.remove('hidden');
+                emptyState.classList.add('hidden'); emptyState.classList.remove('flex');
+            } else {
+                protectedContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
+            }
+        }
+
+        window.navigate = function(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            
+            // Bypass security if it's dashboard or roster view
+            if (viewId === 'dashboard' || viewId === 'roster') {
+                document.getElementById(`view-${viewId}`).classList.remove('hidden');
+                document.getElementById('global-empty-state').classList.add('hidden');
+                document.getElementById('global-empty-state').classList.remove('flex');
+            } else {
+                // If it's a protected view, check access
+                if (!hasRosterAccess && currentUserRole !== 'kebersihan') {
+                    document.getElementById('global-empty-state').classList.remove('hidden');
+                    document.getElementById('global-empty-state').classList.add('flex');
+                    document.getElementById('protected-views-container').classList.add('hidden');
+                } else {
+                    document.getElementById('global-empty-state').classList.add('hidden');
+                    document.getElementById('global-empty-state').classList.remove('flex');
+                    document.getElementById('protected-views-container').classList.remove('hidden');
+                    document.getElementById(`view-${viewId}`).classList.remove('hidden');
+                }
+            }
+            
+            if(viewId === 'task' && currentUserRole === 'kebersihan') renderPendingReports();
+            if(viewId === 'izin') renderLeavesTable();
+            if(viewId === 'konsekuensi') renderKonsekuensiTable();
+            if(viewId === 'history') renderHistoryTable();
+            if(viewId === 'roster') { document.querySelector('.day-btn[data-day="Senin"]').click(); }
+        };
+
+        window.logout = function() {
+            document.getElementById('lapor-form')?.reset(); document.getElementById('form-izin')?.reset();
+            localSelectedTasks = []; uploadedMockFileName = null;
+            document.getElementById('foto-preview-container')?.classList.add('hidden'); document.getElementById('foto-preview-container')?.classList.remove('flex');
+            document.getElementById('foto-placeholder')?.classList.remove('hidden');
+            
+            document.getElementById('main-app').classList.add('hidden'); document.getElementById('main-app').classList.remove('flex');
+            document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('login-form').reset();
+            
+            currentUserRole = ''; currentUserName = ''; currentUserEmail = '';
+            document.body.setAttribute('data-role', 'none');
+        };
+
+        window.toggleNotifications = function() { document.getElementById('notif-popup').classList.toggle('hidden'); };
+
+        function updateNotifications() {
+            if (currentUserRole !== 'kebersihan') return;
+            const notifList = document.getElementById('notif-list'); const badge = document.getElementById('notif-badge');
+            let notifs = [];
+            
+            const alphas = historyData.filter(h => h.status === 'Alpha' && h.consequence === 'Menunggu ditetapkan');
+            if (alphas.length > 0) notifs.push({ icon: 'fa-user-minus text-red-500', text: `Ada ${alphas.length} siswa Alpha belum diberi sanksi.` });
+            const pendingLeaves = leavesData.filter(l => l.status === 'Menunggu');
+            if (pendingLeaves.length > 0) notifs.push({ icon: 'fa-envelope-open-text text-purple-500', text: `Terdapat ${pendingLeaves.length} izin perlu diverifikasi.` });
+
+            if (notifs.length > 0) {
+                badge.innerText = notifs.length; badge.classList.remove('hidden');
+                notifList.innerHTML = notifs.map(n => `<div class="p-4 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-3"><i class="fa-solid ${n.icon} text-base"></i> <span>${n.text}</span></div>`).join('');
+            } else {
+                badge.classList.add('hidden'); notifList.innerHTML = `<div class="p-4 text-center text-xs text-gray-400">Tidak ada notifikasi baru</div>`;
+            }
+        }
+
+        async function saveRosterToDB() {
+            if (!db) return;
+            try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rosters', 'weekly'), rosterData); } catch (e) {}
+        }
+
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.day-btn').forEach(b => { b.classList.remove('bg-gray-900', 'text-white', 'shadow-md', 'bg-orange-600', 'border-transparent'); b.classList.add('bg-white', 'border-gray-200'); if (b.getAttribute('data-day') === 'Guru') b.classList.add('text-orange-700', 'border-orange-200'); else b.classList.add('text-gray-700'); });
+                e.target.classList.remove('bg-white', 'text-gray-700', 'text-orange-700', 'border-gray-200', 'border-orange-200');
+                e.target.classList.add('border-transparent', 'text-white', 'shadow-md');
+                if (e.target.getAttribute('data-day') === 'Guru') e.target.classList.add('bg-orange-600'); else e.target.classList.add('bg-gray-900');
+                
+                currentDayTab = e.target.getAttribute('data-day');
+                document.getElementById('current-roster-day').innerText = currentDayTab; renderRosterList();
+            });
+        });
+
+        document.getElementById('add-student-form')?.addEventListener('submit', (e) => {
+            e.preventDefault(); if (currentUserRole !== 'kebersihan') return;
+            const name = document.getElementById('new-student-name').value.trim(); const email = document.getElementById('new-student-email').value.trim().toLowerCase();
+            if (name && email) {
+                if (!rosterData[currentDayTab]) rosterData[currentDayTab] = [];
+                if(rosterData[currentDayTab].some(m => typeof m === 'object' && m.email === email)) { showToast("Siswa sudah ada di hari ini.", "error"); return; }
+                rosterData[currentDayTab].push({ name, email }); document.getElementById('new-student-name').value = ''; document.getElementById('new-student-email').value = '';
+                saveRosterToDB(); showToast(`Siswa ditambahkan.`);
+            }
+        });
+
+        document.getElementById('add-guru-form')?.addEventListener('submit', (e) => {
+            e.preventDefault(); if (currentUserRole !== 'kebersihan') return;
+            const name = document.getElementById('new-guru-name').value.trim(); const email = document.getElementById('new-guru-email').value.trim().toLowerCase();
+            if (name && email) {
+                if (!rosterData['Guru']) rosterData['Guru'] = [];
+                rosterData['Guru'].push({ name, email }); document.getElementById('new-guru-name').value = ''; document.getElementById('new-guru-email').value = '';
+                saveRosterToDB(); showToast(`Guru ditambahkan.`); document.querySelector('.day-btn[data-day="Guru"]').click();
+            }
+        });
+
+        window.removeStudent = function(day, index) { if (currentUserRole !== 'kebersihan') return; rosterData[day].splice(index, 1); saveRosterToDB(); }
+
+        function renderRosterList() {
+            const list = document.getElementById('roster-list'); const members = rosterData[currentDayTab] || [];
+            document.getElementById('roster-count').innerText = `${members.length} Anggota`; list.innerHTML = '';
+            
+            if (members.length === 0) { list.innerHTML = '<li class="p-6 text-center text-gray-400 text-xs italic">Belum ada anggota terdaftar.</li>'; return; }
+            members.forEach((m, index) => {
+                const memName = typeof m === 'object' ? m.name : m; const memEmail = typeof m === 'object' ? m.email : 'Tidak ada data email'; const isMe = memEmail === currentUserEmail;
+                let deleteBtn = currentUserRole === 'kebersihan' ? `<button onclick="removeStudent('${currentDayTab}', ${index})" class="text-red-400 hover:text-red-600 bg-white shadow-sm border border-gray-100 w-8 h-8 rounded-full flex items-center justify-center transition cursor-pointer"><i class="fa-solid fa-trash-can text-xs"></i></button>` : '';
+                list.insertAdjacentHTML('beforeend', `<li class="p-3.5 flex justify-between items-center hover:bg-gray-50 border-b border-gray-50 last:border-0"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full ${currentDayTab === 'Guru' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'} font-bold flex items-center justify-center text-xs shadow-sm">${index+1}</div><div><span class="font-bold text-gray-800 text-xs sm:text-sm block leading-tight">${memName} ${isMe ? '<span class="ml-1 text-[9px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full border border-yellow-200">Anda</span>' : ''}</span><span class="text-[9px] text-gray-500 font-medium">${memEmail}</span></div></div>${deleteBtn}</li>`);
+            });
+        }
+
+        window.toggleCustomTaskDropdown = function() {
+            const val = document.getElementById('task-dropdown').value; const customDiv = document.getElementById('custom-task-lapor-div');
+            if(val === 'Lainnya') { customDiv.classList.remove('hidden'); } else if(val) { customDiv.classList.add('hidden'); if(!localSelectedTasks.includes(val)) { localSelectedTasks.push(val); renderSelectedTasksList(); } document.getElementById('task-dropdown').value = ""; }
+        }
+        window.addCustomTaskLapor = function() {
+            const val = document.getElementById('custom-task-lapor-input').value.trim();
+            if(val && !localSelectedTasks.includes(val)) { localSelectedTasks.push(val); renderSelectedTasksList(); document.getElementById('custom-task-lapor-input').value = ""; document.getElementById('custom-task-lapor-div').classList.add('hidden'); document.getElementById('task-dropdown').value = ""; }
+        }
+        window.removeTask = function(taskVal) { localSelectedTasks = localSelectedTasks.filter(t => t !== taskVal); renderSelectedTasksList(); }
+        function renderSelectedTasksList() {
+            const list = document.getElementById('selected-tasks-list');
+            if(localSelectedTasks.length === 0) { list.innerHTML = '<li class="text-center text-gray-400 italic bg-gray-50 p-3 rounded-lg border border-gray-100">Belum ada tugas yang dipilih.</li>'; return; }
+            list.innerHTML = localSelectedTasks.map(t => `<li class="flex justify-between items-center bg-white border border-gray-100 p-3 rounded-xl shadow-sm"><span class="font-bold text-green-700 text-xs flex items-center gap-2"><i class="fa-solid fa-circle-check text-green-500"></i> ${t}</span><button type="button" onclick="removeTask('${t}')" class="text-gray-400 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-xmark"></i></button></li>`).join('');
+        }
+
+        const fotoInput = document.getElementById('lapor-foto'); const fotoPreview = document.getElementById('foto-preview'); const fotoContainer = document.getElementById('foto-preview-container'); const fotoPlaceholder = document.getElementById('foto-placeholder');
+        let uploadedMockFileName = null;
+        fotoInput?.addEventListener('change', function(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; let width = img.width; let height = img.height;
+                    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    uploadedMockFileName = canvas.toDataURL('image/jpeg', 0.6);
+                    fotoPreview.src = uploadedMockFileName; fotoContainer.classList.remove('hidden'); fotoContainer.classList.add('flex'); fotoPlaceholder.classList.add('hidden');
+                }; img.src = evt.target.result;
+            }; reader.readAsDataURL(file);
+        });
+
+        document.getElementById('lapor-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!db) return;
+            if(localSelectedTasks.length === 0) { showToast("Pilih minimal 1 tugas.", "error"); return; }
+            if(!uploadedMockFileName) { showToast("Harap lampirkan foto dokumentasi.", "error"); return; }
+            const record = { timestamp: Date.now(), dateString: new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date()), studentName: currentUserName, studentEmail: currentUserEmail, status: 'Menunggu Verifikasi', tasks: [...localSelectedTasks], proofAttached: true, proofName: uploadedMockFileName };
+            const btn = document.getElementById('btn-submit-lapor'); const originalHTML = btn.innerHTML; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengunggah...'; btn.disabled = true;
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), record); showToast("Laporan terkirim! Menunggu verifikasi.");
+                e.target.reset(); localSelectedTasks = []; renderSelectedTasksList(); fotoContainer.classList.add('hidden'); fotoContainer.classList.remove('flex'); fotoPlaceholder.classList.remove('hidden'); uploadedMockFileName = null; navigate('dashboard');
+            } catch (err) { showToast("Gagal mengirim laporan.", "error"); } finally { btn.innerHTML = originalHTML; btn.disabled = false; }
+        });
+
+        function renderPendingReports() {
+            if(currentUserRole !== 'kebersihan') return;
+            const list = document.getElementById('pending-reports-list'); const pending = historyData.filter(h => h.status === 'Menunggu Verifikasi');
+            document.getElementById('badge-pending').innerText = pending.length;
+            if(pending.length === 0) { list.innerHTML = '<div class="text-center text-xs text-gray-400 py-6 italic bg-gray-50 rounded-xl border border-gray-100">Tidak ada laporan baru.</div>'; return; }
+            list.innerHTML = pending.map(p => `<div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-sm"><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-3"><div><div class="font-extrabold text-gray-800">${p.studentName}</div><div class="text-[10px] text-gray-500 bg-gray-50 px-2 py-0.5 rounded border border-gray-100 mt-1 inline-block">${p.dateString}</div></div>${p.proofAttached ? `<button onclick="showToast('Foto tersimpan: ${p.proofName.substring(0,20)}...','info')" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1.5 rounded-lg font-bold border border-blue-100 cursor-pointer flex items-center gap-1"><i class="fa-solid fa-image"></i> Cek Foto</button>` : ''}</div><div class="text-[11px] text-gray-600 mb-4 bg-gray-50 p-2.5 rounded-lg border border-gray-100"><span class="font-bold block mb-1">Tugas dikerjakan:</span><ul class="list-disc pl-4 space-y-0.5">${p.tasks.map(t=>`<li>${t}</li>`).join('')}</ul></div><div class="flex gap-2"><button onclick="verifyReport('${p.id}', 'Hadir')" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"><i class="fa-solid fa-check"></i> Terima</button><button onclick="verifyReport('${p.id}', 'Ditolak')" class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"><i class="fa-solid fa-ban"></i> Tolak</button></div></div>`).join('');
+        }
+
+        window.verifyReport = async function(docId, newStatus) {
+            if(!db) return;
+            try { if(newStatus === 'Ditolak') { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', docId)); showToast("Laporan ditolak."); } else { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', docId), { status: newStatus }); showToast("Laporan diterima (Hadir)."); } } catch(e) {}
+        }
+
+        const verifDaySelect = document.getElementById('verif-day'); const verifStudentSelect = document.getElementById('verif-student');
+        if(verifDaySelect) verifDaySelect.addEventListener('change', populateVerifStudentSelect);
+        function populateVerifStudentSelect() {
+            if(currentUserRole !== 'kebersihan') return; const members = rosterData[verifDaySelect.value] || [];
+            verifStudentSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'; members.forEach(m => { const sName = typeof m === 'object' ? m.name : m; const sEmail = typeof m === 'object' ? m.email : ''; verifStudentSelect.innerHTML += `<option value="${sEmail}|${sName}">${sName}</option>`; });
+        }
+
+        document.getElementById('btn-mark-alpha')?.addEventListener('click', async () => {
+            const studVal = verifStudentSelect.value; const dateVal = document.getElementById('verif-date').value;
+            if(!studVal || !dateVal) { showToast("Pilih siswa & tanggal.", "error"); return; }
+            if(!db) return; const [sEmail, sName] = studVal.split('|'); const dStr = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(dateVal));
+            try { await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), dateString: dStr, studentName: sName, studentEmail: sEmail, status: 'Alpha', tasks: [], proofAttached: false, consequence: 'Menunggu ditetapkan', consequenceResolved: false }); showToast(`${sName} ditandai Alpha.`); verifStudentSelect.value = ''; } catch (e) {}
+        });
+
+        window.toggleCustomSanksi = function(docId) {
+            const select = document.getElementById(`cons-${docId}`); const input = document.getElementById(`cons-custom-${docId}`);
+            if(select.value === 'Lainnya') input.classList.remove('hidden'); else input.classList.add('hidden');
+        }
+        function renderKonsekuensiTable() {
+            const tbody = document.getElementById('konsekuensi-table-body'); const alphas = historyData.filter(h => h.status === 'Alpha');
+            if(alphas.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-10 text-center text-xs text-gray-400 italic">Tidak ada catatan pelanggaran.</td></tr>`; return; }
+            tbody.innerHTML = alphas.map(a => {
+                let consqDisplay = a.consequence || 'Menunggu ditetapkan'; let consqHtml = `<span class="text-[11px] text-gray-800 font-bold bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">${consqDisplay}</span>`;
+                if(currentUserRole === 'kebersihan' && consqDisplay === 'Menunggu ditetapkan') { consqHtml = `<div class="flex flex-col gap-1"><select id="cons-${a.id}" class="border border-gray-200 rounded-lg px-2 py-1.5 text-[10px] w-full bg-white focus:outline-none" onchange="toggleCustomSanksi('${a.id}')"><option value="" hidden disabled selected>Pilih sanksi...</option><option value="Denda Kas Rp 5.000">Denda Kas Rp 5.000</option><option value="Piket 2x">Piket 2x Berikutnya</option><option value="Lainnya">Lainnya... (Ketik Sendiri)</option></select><input type="text" id="cons-custom-${a.id}" class="hidden border border-gray-200 rounded-lg px-2 py-1.5 text-[10px] w-full" placeholder="Ketik sanksi..."><button onclick="setKonsekuensi('${a.id}')" class="bg-gray-800 text-white px-2 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer">Simpan Sanksi</button></div>`; }
+                let statusLunas = a.consequenceResolved ? `<span class="text-[9px] bg-green-50 text-green-700 px-2 py-1 rounded-full font-bold border border-green-200">Selesai</span>` : `<span class="text-[9px] bg-red-50 text-red-700 px-2 py-1 rounded-full font-bold border border-red-200">Belum</span>`;
+                if(currentUserRole === 'kebersihan' && a.consequence && !a.consequenceResolved && a.consequence !== 'Menunggu ditetapkan') { statusLunas += `<button onclick="resolveKonsekuensi('${a.id}')" class="block mt-1 text-[9px] bg-white border border-gray-200 text-gray-700 px-2 py-1 rounded-lg hover:bg-gray-50 font-bold w-full text-center shadow-sm cursor-pointer transition">Tandai Tuntas</button>`; }
+                return `<tr class="border-b border-gray-50 last:border-0 hover:bg-red-50/50 transition"><td class="p-3 align-top"><div class="font-extrabold text-gray-800 text-xs">${a.studentName}</div><div class="text-[9px] text-gray-500 mt-0.5">${a.dateString}</div></td><td class="p-3 align-top w-1/2">${consqHtml}</td><td class="p-3 align-top text-center">${statusLunas}</td></tr>`;
+            }).join('');
+        }
+        window.setKonsekuensi = async function(docId) { const select = document.getElementById(`cons-${docId}`); let val = select.value; if(val === 'Lainnya') { const custom = document.getElementById(`cons-custom-${docId}`).value.trim(); if(!custom) { showToast("Ketikkan sanksi.", "error"); return; } val = custom; } if(!val || !db) return; try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', docId), { consequence: val, consequenceResolved: false }); showToast("Sanksi ditetapkan."); } catch(e) {} }
+        window.resolveKonsekuensi = async function(docId) { if(!db) return; try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', docId), { consequenceResolved: true }); showToast("Sanksi tuntas."); } catch(e) {} }
+
+        document.getElementById('form-izin')?.addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!db) return; const date = document.getElementById('izin-date').value; const reason = document.getElementById('izin-reason').value.trim();
+            try { await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leaves'), { timestamp: Date.now(), dateStr: new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(date)), studentName: currentUserName, studentEmail: currentUserEmail, reason: reason, status: 'Menunggu' }); showToast("Izin berhasil diajukan."); e.target.reset(); } catch(err) {}
+        });
+
+        function renderLeavesTable() {
+            const tbody = document.getElementById('izin-table-body'); tbody.innerHTML = ''; let dataToShow = (currentUserRole === 'murid') ? leavesData.filter(l => l.studentEmail === currentUserEmail) : leavesData;
+            if(dataToShow.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-10 text-center text-xs text-gray-400 italic">Belum ada riwayat izin.</td></tr>`; return; }
+            dataToShow.forEach(l => {
+                const tr = document.createElement('tr'); tr.className = "border-b border-gray-50 last:border-0 hover:bg-gray-50 transition";
+                let badgeClass = l.status === 'Menunggu' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : (l.status === 'Disetujui' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200');
+                let statusHtml = `<span class="px-2 py-0.5 rounded-full border text-[9px] font-bold ${badgeClass}">${l.status}</span>`;
+                if(currentUserRole === 'kebersihan' && l.status === 'Menunggu') { statusHtml = `<div class="flex flex-col gap-1 items-center"><button onclick="respondIzin('${l.id}', 'Disetujui', '${l.studentName}', '${l.studentEmail}', '${l.dateStr}')" class="w-full text-center bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg font-bold text-[9px] shadow-sm transition cursor-pointer">Setuju</button><button onclick="respondIzin('${l.id}', 'Ditolak', null, null, null)" class="w-full text-center bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded-lg font-bold text-[9px] shadow-sm transition cursor-pointer">Tolak</button></div>`; }
+                tr.innerHTML = `<td class="p-3 align-top"><div class="font-extrabold text-gray-800 text-xs">${l.studentName}</div><div class="text-[9px] text-gray-500 mt-0.5">${l.dateStr}</div></td><td class="p-3 text-[11px] text-gray-600 leading-relaxed align-top w-1/2">${l.reason}</td><td class="p-3 align-top text-center">${statusHtml}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+        window.respondIzin = async function(docId, newStatus, studentName, studentEmail, dateStr) {
+            if(!db) return; try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leaves', docId), { status: newStatus }); if(newStatus === 'Disetujui') { await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), dateString: dateStr, studentName: studentName, studentEmail: studentEmail, status: 'Izin', tasks: ['(Izin Disetujui)'], proofAttached: false }); } showToast(`Izin diperbarui.`); } catch(e) {}
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-table-body'); const filter = document.getElementById('history-filter').value; tbody.innerHTML = '';
+            let validHistory = historyData.filter(h => h.status !== 'Menunggu Verifikasi'); if(filter !== 'All') validHistory = validHistory.filter(item => item.status === filter);
+            if (validHistory.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-10 text-center text-xs text-gray-400 italic">Belum ada riwayat.</td></tr>`; return; }
+            validHistory.forEach(record => {
+                const tr = document.createElement('tr'); tr.className = "border-b border-gray-50 last:border-0 hover:bg-gray-50 transition";
+                let taskHtml = '<span class="text-gray-400 italic text-[10px]">Tanpa Laporan</span>';
+                if(record.tasks && record.tasks.length > 0) { taskHtml = `<div class="text-[10px] text-gray-700 font-medium leading-relaxed mb-1 line-clamp-2">${record.tasks.join(', ')}</div>`; if(record.proofAttached) taskHtml += `<div class="text-[9px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded inline-flex items-center gap-1 border border-blue-100"><i class="fa-solid fa-image"></i> Foto Bukti Tersimpan</div>`; }
+                let badgeClass = record.status === 'Hadir' ? 'bg-green-50 text-green-700 border-green-200' : (record.status === 'Alpha' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-purple-50 text-purple-700 border-purple-200');
+                tr.innerHTML = `<td class="p-3 align-top whitespace-nowrap"><div class="text-[9px] text-gray-500 mb-0.5">${record.dateString}</div><div class="font-extrabold text-gray-800 text-xs">${record.studentName}</div></td><td class="p-3 align-top max-w-[150px]">${taskHtml}</td><td class="p-3 align-top text-center"><span class="px-2 py-1 rounded-full border text-[9px] font-bold ${badgeClass}">${record.status}</span></td>`;
+                tbody.appendChild(tr);
+            });
+        }
+        document.getElementById('history-filter').addEventListener('change', renderHistoryTable);
+
+        // START APP
+        initApp();
+    </script>
+</body>
+</html>
