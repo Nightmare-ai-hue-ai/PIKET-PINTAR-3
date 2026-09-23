@@ -525,6 +525,15 @@
         let historyData = []; let leavesData = []; let localSelectedTasks = [];
         let hasRosterAccess = false; // Deteksi grup kosong
 
+        // Menghubungkan tombol mulai untuk membuka form login
+const tombolMulai = document.getElementById('tombol-mulai');
+if (tombolMulai) {
+    tombolMulai.addEventListener('click', () => {
+        document.getElementById('welcome-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    });
+}
+
         // Toast Helper Khusus Error Logging
         window.showToast = function(message, type = 'success') {
             const toast = document.createElement('div');
