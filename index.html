@@ -70,7 +70,7 @@
             <div class="w-16 h-1 bg-green-500 mx-auto rounded-full mb-6"></div>
             <h1 class="text-3xl font-extrabold text-gray-900 mb-2">PIKET Pintar <span class="text-green-500 text-lg align-top">Beta</span></h1>
             <p class="text-gray-600 mb-8 leading-relaxed font-medium">Urus jadwal piket grup Anda dengan teratur dan adil tanpa ribet.<br><br>dan tentu saja... <span class="font-bold text-green-600">gratis!</span></p>
-            <button onclick="showLogin()" class="w-full bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-emerald-700 transition duration-150 shadow-md">
+            <button id="btn-mulai" class="w-full bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-emerald-700 transition duration-150 shadow-md">
                 Mulai
             </button>
         </div>
@@ -943,5 +943,22 @@ if (tombolMulai) {
         // START APP
         initApp();
     </script>
+    <!-- Skrip UI Independen (Anti-Blokir Server) -->
+    <script>
+        // Menangkap tombol berdasarkan ID dan memberikan instruksi klik
+        const tombolMulai = document.getElementById('btn-mulai');
+        if (tombolMulai) {
+            tombolMulai.addEventListener('click', function() {
+                // Sembunyikan layar awal
+                document.getElementById('landing-screen').style.display = 'none';
+                
+                // Tampilkan layar login
+                const layarLogin = document.getElementById('login-screen');
+                layarLogin.classList.remove('hidden');
+                layarLogin.style.display = 'flex';
+            });
+        }
+    </script>
+</body>
 </body>
 </html>
